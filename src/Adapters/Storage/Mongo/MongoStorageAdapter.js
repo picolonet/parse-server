@@ -132,6 +132,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     collectionPrefix = '',
     mongoOptions = {},
   }: any) {
+    //debugger;
     this._uri = uri;
     this._collectionPrefix = collectionPrefix;
     this._mongoOptions = mongoOptions;
@@ -144,6 +145,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   connect() {
+    //debugger;
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
@@ -212,6 +214,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   classExists(name: string) {
+    //debugger;
     return this.connect()
       .then(() => {
         return this.database
@@ -225,6 +228,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   setClassLevelPermissions(className: string, CLPs: any): Promise<void> {
+    //debugger;
     return this._schemaCollection()
       .then(schemaCollection =>
         schemaCollection.updateSchema(className, {
@@ -325,6 +329,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   createClass(className: string, schema: SchemaType): Promise<void> {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const mongoObject = mongoSchemaFromFieldsAndClassNameAndCLP(
       schema.fields,
@@ -349,6 +354,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     fieldName: string,
     type: any
   ): Promise<void> {
+    //debugger;
     return this._schemaCollection()
       .then(schemaCollection =>
         schemaCollection.addFieldIfNotExists(className, fieldName, type)
@@ -360,6 +366,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   // Drops a collection. Resolves with true if it was a Parse Schema (eg. _User, Custom, etc.)
   // and resolves with false if it wasn't (eg. a join table). Rejects if deletion was impossible.
   deleteClass(className: string) {
+    //debugger;
     return (
       this._adaptiveCollection(className)
         .then(collection => collection.drop())
@@ -380,6 +387,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   deleteAllClasses(fast: boolean) {
+    //debugger;
     return storageAdapterAllCollections(this).then(collections =>
       Promise.all(
         collections.map(collection =>
@@ -410,6 +418,7 @@ export class MongoStorageAdapter implements StorageAdapter {
 
   // Returns a Promise.
   deleteFields(className: string, schema: SchemaType, fieldNames: string[]) {
+    //debugger;
     const mongoFormatNames = fieldNames.map(fieldName => {
       if (schema.fields[fieldName].type === 'Pointer') {
         return `_p_${fieldName}`;
@@ -440,6 +449,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   // schemas cannot be retrieved, returns a promise that rejects. Requirements for the
   // rejection reason are TBD.
   getAllClasses(): Promise<StorageClass[]> {
+    //debugger;
     return this._schemaCollection()
       .then(schemasCollection =>
         schemasCollection._fetchAllSchemasFrom_SCHEMA()
@@ -451,6 +461,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   // this adapter doesn't know about the schema, return a promise that rejects with
   // undefined as the reason.
   getClass(className: string): Promise<StorageClass> {
+    //debugger;
     return this._schemaCollection()
       .then(schemasCollection =>
         schemasCollection._fetchOneSchemaFrom_SCHEMA(className)
@@ -462,6 +473,7 @@ export class MongoStorageAdapter implements StorageAdapter {
   // and should infer from the type. Or maybe does need the schema for validations. Or maybe needs
   // the schema only for the legacy mongo format. We'll figure that out later.
   createObject(className: string, schema: SchemaType, object: any) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const mongoObject = parseObjectToMongoObjectForCreate(
       className,
@@ -501,6 +513,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     schema: SchemaType,
     query: QueryType
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     return this._adaptiveCollection(className)
       .then(collection => {
@@ -534,6 +547,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     update: any
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const mongoUpdate = transformUpdate(className, update, schema);
     const mongoWhere = transformWhere(className, query, schema);
@@ -550,6 +564,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     update: any
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const mongoUpdate = transformUpdate(className, update, schema);
     const mongoWhere = transformWhere(className, query, schema);
@@ -579,6 +594,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     update: any
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const mongoUpdate = transformUpdate(className, update, schema);
     const mongoWhere = transformWhere(className, query, schema);
@@ -594,6 +610,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     { skip, limit, sort, keys, readPreference }: QueryOptions
   ): Promise<any> {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const mongoWhere = transformWhere(className, query, schema);
     const mongoSort = _.mapKeys(sort, (value, fieldName) =>
@@ -644,6 +661,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     schema: SchemaType,
     fieldNames: string[]
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const indexCreationRequest = {};
     const mongoFieldNames = fieldNames.map(fieldName =>
@@ -686,6 +704,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     readPreference: ?string
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     readPreference = this._parseReadPreference(readPreference);
     return this._adaptiveCollection(className)
@@ -704,6 +723,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     fieldName: string
   ) {
+    //debugger;
     schema = convertParseSchemaToMongoSchema(schema);
     const isPointerField =
       schema.fields[fieldName] && schema.fields[fieldName].type === 'Pointer';
@@ -734,6 +754,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     pipeline: any,
     readPreference: ?string
   ) {
+    //debugger;
     let isPointerField = false;
     pipeline = pipeline.map(stage => {
       if (stage.$group) {
@@ -959,22 +980,26 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   performInitialization(): Promise<void> {
+    //debugger;
     return Promise.resolve();
   }
 
   createIndex(className: string, index: any) {
+    //debugger;
     return this._adaptiveCollection(className)
       .then(collection => collection._mongoCollection.createIndex(index))
       .catch(err => this.handleError(err));
   }
 
   createIndexes(className: string, indexes: any) {
+    //debugger;
     return this._adaptiveCollection(className)
       .then(collection => collection._mongoCollection.createIndexes(indexes))
       .catch(err => this.handleError(err));
   }
 
   createIndexesIfNeeded(className: string, fieldName: string, type: any) {
+    //debugger;
     if (type && type.type === 'Polygon') {
       const index = {
         [fieldName]: '2dsphere',
@@ -989,6 +1014,7 @@ export class MongoStorageAdapter implements StorageAdapter {
     query: QueryType,
     schema: any
   ): Promise<void> {
+    //debugger;
     for (const fieldName in query) {
       if (!query[fieldName] || !query[fieldName].$text) {
         continue;
@@ -1021,24 +1047,28 @@ export class MongoStorageAdapter implements StorageAdapter {
   }
 
   getIndexes(className: string) {
+    //debugger;
     return this._adaptiveCollection(className)
       .then(collection => collection._mongoCollection.indexes())
       .catch(err => this.handleError(err));
   }
 
   dropIndex(className: string, index: any) {
+    //debugger;
     return this._adaptiveCollection(className)
       .then(collection => collection._mongoCollection.dropIndex(index))
       .catch(err => this.handleError(err));
   }
 
   dropAllIndexes(className: string) {
+    //debugger;
     return this._adaptiveCollection(className)
       .then(collection => collection._mongoCollection.dropIndexes())
       .catch(err => this.handleError(err));
   }
 
   updateSchemaWithIndexes(): Promise<any> {
+    //debugger;
     return this.getAllClasses()
       .then(classes => {
         const promises = classes.map(schema => {
